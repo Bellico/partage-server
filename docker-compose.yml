@@ -1,0 +1,24 @@
+version: "3.8"
+services:
+    gateway:
+        image: partage-gateway-api:latest
+        container_name: gateway
+        build:
+            context: ./src/gateways/Partage.Gateway.Api
+            dockerfile: Dockerfile
+        ports:
+            - 80:80
+        depends_on:
+            - note
+        # links:
+        #     - note
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+              NOTE_URL=http://172.16.238.11:80/
+
+    note:
+        image: partage-note-api:latest
+        container_name: note
+        build:
+            context: ./src/services/Note/Partage.Note.Api
+            dockerfile: Dockerfile

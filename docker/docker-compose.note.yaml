@@ -1,0 +1,7 @@
+version: "3.8"
+services:
+    note:
+        image: partage-note-api:latest
+        container_name: note
+        build:
+            context: ../src/services/Note/Partage.Note.Api

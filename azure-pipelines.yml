@@ -1,0 +1,65 @@
+# Starter pipeline
+
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+
+  - task: DockerCompose@0
+    displayName: Docker compose Build
+    inputs:
+      containerregistrytype: 'Azure Container Registry'
+      azureSubscription: 'Azure Franck - Dev'
+      azureContainerRegistry: '{"loginServer":"registerfma.azurecr.io", "id" : "/subscriptions/9d95c9a1-11f5-46bf-8efa-13f79b46a62b/resourceGroups/FmRessource/providers/Microsoft.ContainerRegistry/registries/registerfma"}'
+      dockerComposeFile: 'docker-compose.yml'
+      action: 'Build services'
+      includeLatestTag: true
+
+  - task: DockerCompose@0
+    displayName: Docker compose Push
+    inputs:
+      containerregistrytype: 'Azure Container Registry'
+      azureSubscription: 'Azure Franck - Dev'
+      azureContainerRegistry: '{"loginServer":"registerfma.azurecr.io", "id" : "/subscriptions/9d95c9a1-11f5-46bf-8efa-13f79b46a62b/resourceGroups/FmRessource/providers/Microsoft.ContainerRegistry/registries/registerfma"}'
+      dockerComposeFile: 'docker-compose.yml'
+      action: 'Push services'
+      includeLatestTag: true
+
+  - task: DockerCompose@0
+    displayName: Docker compose Lock
+    inputs:
+      containerregistrytype: 'Azure Container Registry'
+      azureSubscription: 'Azure Franck - Dev'
+      azureContainerRegistry: '{"loginServer":"registerfma.azurecr.io", "id" : "/subscriptions/9d95c9a1-11f5-46bf-8efa-13f79b46a62b/resourceGroups/FmRessource/providers/Microsoft.ContainerRegistry/registries/registerfma"}'
+      dockerComposeFile: 'docker-compose.yml'
+      action: 'Lock services'
+      outputDockerComposeFile: 'docker-compose.yml'
+
+  - task: CopyFiles@2
+    displayName: 'Copy azure.yml'
+    inputs:
+      Contents: 'azure.yml'
+      TargetFolder: '$(build.artifactstagingdirectory)'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: drop'
+
+  - task: Kubernetes@1
+    displayName: 'Kubernetes Apply'
+    inputs:
+      connectionType: 'Kubernetes Service Connection'
+      kubernetesServiceEndpoint: 'Kuber'
+      command: 'apply'
+      useConfigurationFile: true
+      configuration: '$(System.DefaultWorkingDirectory)/azure.yml'
+      secretType: 'dockerRegistry'
+      containerRegistryType: 'Azure Container Registry'
+      azureSubscriptionEndpointForSecrets: 'Azure Franck - Dev'
+      azureContainerRegistry: 'registerfma.azurecr.io'

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Partage.DotNet.Api
+namespace Partage.Note.Api
 {
     public class Program
     {

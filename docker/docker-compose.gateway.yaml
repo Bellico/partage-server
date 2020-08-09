@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+    gateway:
+        image: partage-gateway-api:latest
+        container_name: gateway
+        build:
+            context: ../src/gateways/Partage.Gateway.Api
+            # app_net:
+            #     ipv4_address: 172.16.238.10
+        ports:
+            - 80:80
+        depends_on:
+            - note
+        # links:
+        #     - note
+        environment:
+            - NOTE_URL=http://172.16.238.11:80/
