@@ -1,9 +1,12 @@
-using System;
+using GraphQL.Server;
+using GraphQL.Server.Ui.GraphiQL;
+using GraphQL.Types;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Partage.Gateway.Api.Application;
+using Partage.Gateway.Api.Configuration;
 
 namespace Partage.Gateway.Api
 {
@@ -13,11 +16,16 @@ namespace Partage.Gateway.Api
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
-            services.AddHttpClient<INoteService, NoteService>(c =>
+            services.Configure<KestrelServerOptions>(options =>
             {
-                c.BaseAddress = new Uri("http://note/");
+                options.AllowSynchronousIO = true;
             });
+
+            services.AddControllers();
+
+            services.ConfigureGraphQL();
+
+            services.ConfigureServicesClient();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -32,9 +40,14 @@ namespace Partage.Gateway.Api
 
             app.UseHttpsRedirection();
 
+            app.UseGraphQL<ISchema>();
+
+            app.UseGraphiQLServer(new GraphiQLOptions());
+
             app.UseRouting();
 
             // app.UseAuthentication();
+
             // app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
