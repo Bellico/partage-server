@@ -17,7 +17,7 @@ public class TestController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        var value = await noteService.GetAsync();
+        var value = await noteService.GetNoteAsync();
 
         return new OkObjectResult(value);
     }

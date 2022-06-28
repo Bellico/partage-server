@@ -1,42 +1,23 @@
-using GraphQL.Server;
-using GraphQL.Server.Ui.GraphiQL;
-using GraphQL.Types;
+﻿using Microsoft.AspNetCore.Authentication.Certificate;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Partage.Gateway.Api
+namespace Partage.Link.Api
 {
     public class Startup
     {
-        private readonly IConfiguration Configuration;
-
-        public Startup(IConfiguration configuration)
-        {
-            this.Configuration = configuration;
-        }
-
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.Configure<KestrelServerOptions>(options =>
-            {
-                options.AllowSynchronousIO = true;
-            });
-
-            services.AddHealthChecks();
+            services.AddAuthentication(CertificateAuthenticationDefaults.AuthenticationScheme).AddCertificate();
 
             services.AddControllers();
 
-            services.ConfigureGraphQL();
-
-            services.ConfigureMediatR();
-
-            services.ConfigurePartageServices(Configuration);
+            services.AddGrpc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,24 +28,14 @@ namespace Partage.Gateway.Api
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseHsts();
-
-            app.UseHealthChecks("/health");
-
-            app.UseHttpsRedirection();
-
-            app.UseGraphQL<ISchema>();
-
-            app.UseGraphiQLServer(new GraphiQLOptions());
+            app.UseAuthentication();
 
             app.UseRouting();
 
-            // app.UseAuthentication();
-
-            // app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapGrpcService<LinkGrpcService>();
+
                 endpoints.MapControllers();
             });
         }

@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package link;
+
+option csharp_namespace = "Partage.Link.Api";
+
+// The Link service definition.
+service LinkService {
+  // Get a link
+  rpc GetLink (GetLinkRequest) returns (GetLinkResponse);
+}
+
+message GetLinkRequest {
+  string Id= 1;
+}
+
+message GetLinkResponse {
+  string link = 1;
+}

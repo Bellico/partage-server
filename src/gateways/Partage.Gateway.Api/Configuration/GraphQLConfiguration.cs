@@ -4,7 +4,7 @@ using GraphQL.Types;
 using Microsoft.Extensions.DependencyInjection;
 using Partage.Gateway.Api.GraphQL;
 
-namespace Partage.Gateway.Api.Configuration
+namespace Partage.Gateway.Api
 {
     public static class GraphQLConfiguration
     {

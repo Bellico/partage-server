@@ -4,6 +4,6 @@ namespace Partage.Gateway.Api.Application
 {
     public interface INoteService
     {
-        Task<string> GetAsync();
+        Task<NoteModel> GetNoteAsync();
     }
 }

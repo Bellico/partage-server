@@ -10,7 +10,7 @@
             "request": "attach",
             "platform": "netCore",
             "sourceFileMap": {
-                "/app": "${workspaceFolder}"
+                "/app": "E:/PartageLab/partage-server/"
             }
         },
         {
@@ -26,7 +26,7 @@
             // Enable launching a web browser when ASP.NET Core starts. For more information: https://aka.ms/VSCode-CS-LaunchJson-WebBrowser
             "env": {
                 "ASPNETCORE_ENVIRONMENT": "Development",
-                "ASPNETCORE_URLS": "https://localhost:5001;http://localhost:5000"
+                "ASPNETCORE_URLS": "https://localhost:5009"
             }
         }
     ]

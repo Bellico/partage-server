@@ -1,24 +1,39 @@
 version: "3.8"
 services:
-    gateway:
-        image: partage-gateway-api:latest
-        container_name: gateway
-        build:
-            context: ./src/gateways/Partage.Gateway.Api
-            dockerfile: Dockerfile
-        ports:
-            - 80:80
-        depends_on:
-            - note
-        # links:
-        #     - note
-        environment:
-            - ASPNETCORE_ENVIRONMENT=Development
-              NOTE_URL=http://172.16.238.11:80/
+  gateway:
+    image: partage-gateway-api:latest
+    container_name: gateway
+    build:
+      context: ./
+      dockerfile: ./src/gateways/Partage.Gateway.Api/Dockerfile
+    ports:
+      - 80:80
+    depends_on:
+      - note
+      - link
+    # links:
+    #     - note
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
 
-    note:
-        image: partage-note-api:latest
-        container_name: note
-        build:
-            context: ./src/services/Note/Partage.Note.Api
-            dockerfile: Dockerfile
+  note:
+    image: partage-note-api:latest
+    container_name: note
+    build:
+      context: ./src/services/Note/Partage.Note.Api
+      dockerfile: Dockerfile
+
+  link:
+    image: partage-link-api:latest
+    container_name: link
+    build:
+      context: ./src/services/Link/Partage.Link.Api
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_URLS=https://+;http://+
+      - ASPNETCORE_ENVIRONMENT=Development
+      - Kestrel__Certificates__Default__Path=/root/https/localhost.pfx
+      - Kestrel__Certificates__Default__Password=1234
+    volumes:
+      - /C/Users/franc/AppData/Roaming/Microsoft/UserSecrets:/root/.microsoft/usersecrets
+      - /C/Users/franc/certificates/:/root/https
